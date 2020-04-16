@@ -22,10 +22,6 @@ Vagrant.configure("2") do |config|
       end
     end
   end
-  #config.vm.provision "shell", inline: "echo '192.168.254.200 automacao.sysadmin.domain automacao' >> /etc/hosts"
-  #config.vm.provision "shell", inline: "echo '192.168.254.201 webserver.sysadmin.domain webserver' >> /etc/hosts"
-  #config.vm.provision "shell", inline: "echo '192.168.254.202 database.sysadmin.domain database' >> /etc/hosts"
-
   config.vm.provision "shell", inline: <<-SHELL 
   echo '192.168.254.200 automacao.sysadmin.domain automacao' >> /etc/hosts
   echo '192.168.254.201 webserver.sysadmin.domain webserver' >> /etc/hosts
