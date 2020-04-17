@@ -20,6 +20,14 @@ Vagrant.configure("2") do |config|
         vb.memory = conf["memory"]
         vb.cpus = conf["cpu"]
       end
+      if "#{conf["image"]}" == "debian/buster64"
+        machine.vm.provision "shell", inline: "apt update -y && apt upgrade -y"
+        machine.vm.provision "shell", inline: "apt install python -y"
+      end
+      if "#{conf["image"]}" == "centos/7"
+        machine.vm.provision "shell", inline: "yum update -y && yum upgrade -y"
+        machine.vm.provision "shell", inline: "yum install epel-release -y"
+      end
     end
   end
   config.vm.provision "shell", inline: <<-SHELL 
@@ -27,4 +35,6 @@ Vagrant.configure("2") do |config|
   echo '192.168.254.201 webserver.sysadmin.domain webserver' >> /etc/hosts
   echo '192.168.254.202 database.sysadmin.domain database' >> /etc/hosts
   SHELL
+
+
 end
