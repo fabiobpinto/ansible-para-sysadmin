@@ -1,2 +1,26 @@
 ---
 # tasks file for common
+# Atualização do SO e instalação de Packages
+- name: Upgrade SO
+  apt: 
+    name="*"
+    state=latest 
+    update_cache=yes
+
+- name: Instalação de Packages
+  apt:
+    name:
+      - vim
+      - net-tools
+    state: latest
+
+- name: Configurando o Timezone
+  file: src=/usr/share/zoneinfo/America/Sao_Paulo dest=/etc/localtime state=link force=yes
+
+- name: Copiando Arquivo BKP
+  copy: src=backup.tar.gz dest=/tmp/backup.tar.gz
+
+- name: Copiando um template
+  template: src=motd dest=/etc/motd force=yes owner=root group=root
+
+...

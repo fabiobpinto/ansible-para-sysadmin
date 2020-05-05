@@ -2,7 +2,7 @@
 automacao
 
 [servidores_web]
-webserver ansible_python_interpreter=/usr/bin/python3
+webserver
 
 [servidores_db]
 database
@@ -18,4 +18,7 @@ database
 
 [debian]
 webserver
+
+[debian:vars]
+ansible_python_interpreter= /usr/bin/python3
 
