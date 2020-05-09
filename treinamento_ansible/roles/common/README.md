@@ -12,7 +12,7 @@ No arquivo motd é utilizado duas variáveis para sua criação, essas variávei
 Dependencias
 ------------
 
-Necessita do arquivo de Backup.tar.gz e modt para ser copiado para os Servidores de Destino
+Necessita do arquivo de Backup.tar.gz e modt para ser copiado para os Servidores de Destino.
 
 Example Playbook
 ----------------
