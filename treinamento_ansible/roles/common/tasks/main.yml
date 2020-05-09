@@ -23,4 +23,10 @@
 - name: Copiando um template
   template: src=motd dest=/etc/motd force=yes owner=root group=root
 
+- name: Instalação do NGINX
+  apt: 
+    name: nginx
+    state: latest
+  notify: Restart NGINX
+
 ...
