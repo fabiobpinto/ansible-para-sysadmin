@@ -1,0 +1,13 @@
+---
+# tasks file for updates
+
+#Update Red Hat Distros
+- name: Update Red Hat Distros
+  yum: name=* state=latest security=yes
+  when: ansible_distribution_file_variety == 'RedHat'
+
+
+#Update Debian Distros
+- name: Update Debian Distros
+  apt: update_cache=yes upgrade=yes
+  when: ansible_distribution_file_variety == 'Debian'

@@ -1,0 +1,8 @@
+---
+- name: Upgrade Operational System
+  hosts: 
+    - all
+  roles: 
+    - updates
+
+...
