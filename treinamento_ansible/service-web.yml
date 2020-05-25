@@ -6,8 +6,8 @@
       name: nginx
       state: latest
     notify: 
-      Stop Apache
-      Restart Nginx
+      - Stop Apache
+      - Restart Nginx
   handlers:
     - name: Stop Apache
       systemd: 

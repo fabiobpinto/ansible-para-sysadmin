@@ -1,32 +1,32 @@
 ---
-# tasks file for common
-# Atualização do SO e instalação de Packages
-- name: Upgrade SO
-  apt: 
-    name="*"
-    state=latest 
-    update_cache=yes
+#### ---- Configurações Gerais ---- ####
 
-- name: Instalação de Packages
-  apt:
-    name:
-      - vim
-      - net-tools
-    state: latest
+- name: Alterações no arquivo /etc/profile
+  lineinfile: dest=/etc/profile line={{ item }}
+  with_items:
+    - '#### ---- Linhas Adicionais ---- ####'
+    - '### --- Variaveis e Alias Customizados --- ###'
+    - 'export EDITOR=vim'
+    - 'export HISTTIMEFORMAT="%d/%m/%Y - %H:%M:%S - "'
+    - 'export HISTSIZE="5000"'
+    - 'export HISTFILESIZE="5000"'
+    - 'alias ls="ls --color"'
+    - 'alias grep="grep -i --color"'
 
-- name: Configurando o Timezone
-  file: src=/usr/share/zoneinfo/America/Sao_Paulo dest=/etc/localtime state=link force=yes
+- name: Recarregando o /etc/profile
+  shell: source /etc/profile
+  #args:
+  #  executable: /bin/bash
+  
+- name: Desabilitando o SELINUX de forma permanente
+  replace: 
+    dest: /etc/selinux/config
+    regexp: 'SELINUX=enforcing'
+    replace: 'SELINUX=disable'
+  when: ansible_distribution_file_variety == 'RedHat'
 
-- name: Copiando Arquivo BKP
-  copy: src=backup.tar.gz dest=/tmp/backup.tar.gz
+#- name: Desabilitando o SELINUX de forma temporaria
+#  shell: setenforce 0
+#  when: ansible_distribution_file_variety == 'RedHat'
 
-- name: Copiando um template
-  template: src=motd dest=/etc/motd force=yes owner=root group=root
 
-- name: Instalação do NGINX
-  apt: 
-    name: nginx
-    state: latest
-  notify: Restart NGINX
-
-...

@@ -1,6 +1,2 @@
 ---
 # tasks file for php
- - name: Instalação do pacote do PHP
-   apt: name=php state=latest 
- 
-...

@@ -1,10 +1,2 @@
 ---
 # handlers file for common
-- name: Restart NGINX
-  systemd: 
-    statet: restarted
-    enable: yes
-    daemon_reload: yes
-    name: nginx
-
-  

@@ -1,0 +1,5 @@
+- name: Common Playbook - Configurações Comum a todos
+  hosts: 
+    - all
+  roles:
+    - common
