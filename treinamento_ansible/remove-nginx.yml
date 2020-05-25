@@ -1,0 +1,25 @@
+---
+- hosts: webserver
+  tasks:
+  - name: Parando Serviço
+    systemd:
+      name: nginx
+      state: stopped 
+      enabled: no
+    ignore_errors: yes
+
+  - name: Remove Packages NGINX
+    apt: 
+      name: nginx* 
+      state: absent
+      purge: yes
+  
+  - name: Clean Folders and Files
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+      - /etc/nginx
+      - /usr/share/nginx/html/index.html
+      - /var/www/html/index.html
+...
