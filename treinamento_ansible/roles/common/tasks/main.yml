@@ -14,12 +14,6 @@
     - 'alias ls="ls --color"'
     - 'alias grep="grep -i --color"'
 
-- name: Recarregando o /etc/profile
-  shell: 
-    source: /etc/profile
-  #args:
-  #  executable: /bin/bash
-  
 - name: Desabilitando o SELINUX de forma permanente
   replace: 
     dest: /etc/selinux/config
@@ -89,7 +83,7 @@
   user:
     name: treinamento
     comment: "Treinamento Ansible"
-    bash: /bin/bash
+    shell: /bin/bash
     home: /home/treinamento
     password: "344db06e7ee931c79451d33eb9b2eb1a"
   

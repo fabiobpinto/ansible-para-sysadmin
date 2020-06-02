@@ -5,5 +5,5 @@
     daemon_reload: yes 
     name: sshd 
     state: restart 
-    enable: yes
+    enabled: yes
 ...
