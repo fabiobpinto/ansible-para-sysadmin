@@ -1,6 +1,7 @@
 ---
+###############################################
 #### ---- Configurações Gerais ---- ####
-
+###############################################
 - name: Alterações no arquivo /etc/profile
   lineinfile: dest=/etc/profile line={{ item }}
   with_items:
@@ -14,7 +15,8 @@
     - 'alias grep="grep -i --color"'
 
 - name: Recarregando o /etc/profile
-  shell: source /etc/profile
+  shell: 
+    source: /etc/profile
   #args:
   #  executable: /bin/bash
   
@@ -32,16 +34,13 @@
 ###############################################
 ### --- Manager Packages and Upgrade OS --- ###
 ###############################################
-
-###############################################
-###############################################
 ########### CENTOS/REDHAT #####################
 ###############################################
-###############################################
-#
 #Install Repository EPEL-RELEASE
 - name: Install Epel-release repository
-  yum: name=epel-release state=latest
+  yum: 
+    name: epel-release 
+    state: latest
   when: ansible_distribution_file_variety == 'RedHat'
 
 - name: Install Packages CentOS/RedHat
@@ -66,11 +65,8 @@
   when: ansible_distribution_file_variety == 'RedHat'
 
 ###############################################
-###############################################
 ###########  DEBIAN/UBUNTU ####################
 ###############################################
-###############################################
-
 #Update Debian Distro
 - name: Update Debian/Ubuntu Distros
   apt: update_cache=yes upgrade=yes
@@ -81,6 +77,74 @@
   apt: upgrade=dist
   when: ansible_distribution_file_variety == 'Debian'
 
+#Install some programs on Debian/Ubuntu using a list
 - name: Install Packages Debian/Ubuntu
   yum: name={{ common_packages_debian }} state=latest update_cache=yes
   when: ansible_distribution_file_variety == 'Debian'
+
+###############################################
+#####  -----  User Manager
+###############################################
+- name: Create user Treinamento
+  user:
+    name: treinamento
+    comment: "Treinamento Ansible"
+    bash: /bin/bash
+    home: /home/treinamento
+    password: "344db06e7ee931c79451d33eb9b2eb1a"
+  
+###############################################
+#####  -----  Time Zones
+###############################################
+- name: Configure Time Zone
+  file: 
+    src: /usr/share/zoneinfo/America/Sao_Paulo 
+    dest: /etc/localtime 
+    state: link 
+    force: yes 
+    owner: root 
+    group: root
+
+###############################################
+#####  ----- Configure SSH 
+###############################################
+- name: Configure SSHD
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    state: present
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: '#Port 22', line: 'Port 22' }
+    - { regexp: '#Banner none', line: 'Banner /etc/ssh/banner_ssh' }
+    - { regexp: 'X11Forwarding yes', line: 'X11Forwarding no'}
+
+- name: Define protocol version 2 SSH
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    line: 'Protocol 2'
+
+- name: Add a motd
+  template:
+    src: motd
+    dest: /etc/motd
+    force: yes
+    owner: root
+    group: root
+    mode: 0755
+  notify:
+    - Restart SSH
+
+
+
+
+
+
+
+
+
+
+
+
+
+
