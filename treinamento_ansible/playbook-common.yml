@@ -1,5 +1,8 @@
-- name: Common Playbook - Configurações Comum a todos
+---
+# Common Playbook - Configurações comum a todos os hosts
+- name: Playbook Final - Executando o laboratorio final do treinamento Ansible
   hosts: 
     - all
   roles:
     - common
+...

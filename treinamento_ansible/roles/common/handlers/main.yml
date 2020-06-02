@@ -1,2 +1,9 @@
 ---
 # handlers file for common
+- name : Restart SSH
+  systemd:
+    daemon_reload: yes 
+    name: sshd 
+    state: restart 
+    enable: yes
+...

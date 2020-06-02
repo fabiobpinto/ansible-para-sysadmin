@@ -1,5 +1,8 @@
---------------------------------------------------------------------
-                SERVIDOR WEB
-Hostname.: "{{ ansible_fqdn }}"
-Endereço IP.: "{{ ansible_all_ipv4_addresses }}"
---------------------------------------------------------------------
+----------------------------------------------------
+              TREINAMENTO ANSIBLE
+
+Host.: "{{ ansible_hostname }}"
+IP Address: "{{ ansible_default_ipv4 }}"
+Distro.: "{{ ansible_distribution }}"
+
+----------------------------------------------------
