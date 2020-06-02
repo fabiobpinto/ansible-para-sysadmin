@@ -85,7 +85,7 @@
     comment: "Treinamento Ansible"
     shell: /bin/bash
     home: /home/treinamento
-    password: "344db06e7ee931c79451d33eb9b2eb1a"
+    password: "{{ '1qa2ws' | password_hash('sha512') }}"
   
 ###############################################
 #####  -----  Time Zones
