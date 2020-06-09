@@ -30,4 +30,46 @@
       - 127.0.0.1
       - localhost
     when: mysql_root_pass.changed
+
+- name: Copy Template .my.cnf
+  template: 
+    src: .my.cng
+    dest: /root/.my.cnf
+    owner: root
+    group: root
+    mode: 0600
+  when: mysql_root_pass.changed
+
+- name: Remove Access to Anonymous users MySQL
+  mysql_user:
+    name: ""
+    host: localhost
+    state: absent
+
+- name: Remove Test BASE
+  mysql_db:
+    name: test
+    state: absent
+
+- name: Create Database Wordpress
+  mysql_db:
+    name: 'wordpress'
+    state: present
+    login_user: 'root'
+    login_password: "{{ mysql_root_pass.stdout }}"
+    login_host: localhost
+  when: mysql_root_pass.changed
+
+- name: Create USER wordpress
+  mysql_user:
+    name: 'wordpress'
+    password: 'wordpress'
+    priv: 'wordpress.*:ALL'
+    host: '192.168.254.%'
+    state: present
+    login_user: 'root'
+    login_password: "{{ mysql_root_pass.stdout }}"
+    login_host: localhost
+  when: mysql_root_pass.changed
+
 ...
