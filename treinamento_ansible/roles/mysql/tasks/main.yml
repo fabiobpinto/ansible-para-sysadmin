@@ -1,2 +1,33 @@
 ---
 # tasks file for mysql
+- name: Install packages MariaDB
+  yum:
+    name: "{{ mariadb_packages }}"
+    state: latest
+    update_cache: yes
+    install_recommends: yes
+  vars:
+     mariadb_packages:
+       - mariadb-client
+       - mariadb-server
+       - python-mysqldb
+
+- name: Creating password root
+  command: openssl rand -base64 14 creates=/root/.my.cnf
+  register: mysql_root_pass
+
+- name: Display passwor
+  debug:
+    msg: "Password: {{ mysql_root_pass.stout }}"
+  when: mysql_root_pass.changed
+
+- name: Change root password
+  mysql_user:
+    name: root
+    host: "{{ items }}"
+    password: "{{ mysql_root_pass_stout }}"
+    with_items:
+      - 127.0.0.1
+      - localhost
+    when: mysql_root_pass.changed
+...
