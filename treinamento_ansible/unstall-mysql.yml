@@ -1,0 +1,32 @@
+---
+- name: Playbook MySQL - Instalacao MySQL no Server DATABASE
+  hosts: 
+      - database
+
+# tasks file for mysql
+- name: Remove packages MariaDB
+  yum:
+    name: "{{ mariadb_packages }}"
+    state: absent
+  vars:
+     mariadb_packages:
+       - MariaDB
+       - mariadb-server
+       - MySQL-python
+  when: ansible_hostname == 'database'
+
+- name: Starting and Enable MySQL
+  service:
+    name: mariadb
+    state: stopedd
+    enabled: no
+
+
+- name: Remove Template .my.cnf
+  file:
+    path: /root/.my.cnf
+    state: absent
+  when: 
+    - mysql_root_pass.changed
+    - ansible_hostname == 'database'
+...
