@@ -1,2 +1,65 @@
 ---
 # tasks file for nginx
+#
+
+- name: Copy official REPO to Server
+  copy:
+    src: nginx.repo
+    dest: /etc/apt/sources.list.d/nginx.list
+    owner: root
+    group: root
+  when:
+    - ansible_distribution_file_variety == 'Debian'
+    - ansible_hostname == 'webserver'
+
+
+- name: Update SO
+  apt:
+    name: '*'
+    state: latest
+  when:
+    - ansible_distribution_file_variety == 'Debian'
+    - ansible_hostname == 'webserver'
+
+- name: Install packages NGINX
+  apt:
+    name: ['nginx', 'libnginx-mod-http-geoip'] 
+    state: latest
+  when:
+    - ansible_distribution_file_variety == 'Debian'
+    - ansible_hostname == 'webserver'
+
+- name: Backup Security Files NGINX
+  command: mv /etc/nginx /etc/nginx_origin
+  args:
+    warn: false
+  when:
+    - ansible_distribution_file_variety == 'Debian'
+    - ansible_hostname == 'webserver'
+
+- name: Copy file nginx.tar.gz to server
+  unarchive: 
+    src: nginx.tar.gz
+    dest: /etc/
+    owner: root
+    group: root
+  when:
+    - ansible_distribution_file_variety == 'Debian'
+    - ansible_hostname == 'webserver'
+
+- name: Create NGINX Directory
+  file:
+    path: '{{ item }}'
+    state: directory
+    mode: 0755
+    owner: www-data
+    group: www-data
+  with_items:
+    - /var/www
+    - /var/www/html
+  notify: Restart NGINX
+  when:
+    - ansible_distribution_file_variety == 'Debian'
+    - ansible_hostname == 'webserver'
+
+...
