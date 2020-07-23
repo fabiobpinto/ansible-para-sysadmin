@@ -37,6 +37,15 @@
     state: latest
   when: ansible_distribution_file_variety == 'RedHat'
 
+- name: Enable PowerTool Repository
+  replace:
+      dest=/etc/yum.repos.d/CentOS-PowerTools.repo
+      regexp='enabled=0'
+      replace='enabled=1'
+  when: 
+    - ansible_distribution_file_variety == 'RedHat'
+    - ansible_distribution_major_version == '8'
+
 - name: Install Packages CentOS/RedHat
   yum: name={{ common_packages_redhat }} state=latest
 #  Posso usar uma variavel aqui ou fazer a lista em default/main.yml
