@@ -1,5 +1,0 @@
-- name: Common Playbook - Starting Deploy
-  hosts: 
-    - webserver
-  roles:
-    - common

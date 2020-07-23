@@ -1,8 +1,0 @@
----
-# Common Playbook - Configurações comum a todos os hosts
-- name: Playbook MySQL - Instalacao MySQL no Server DATABASE
-  hosts: 
-    - database
-  roles:
-    - mysql
-...
