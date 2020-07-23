@@ -3,8 +3,8 @@
 
 machines = {
   "automacao" => {"memory" => "1024", "cpu" => "2", "ip" => "200", "image" => "centos/7"},
-  "webserver" => {"memory" => "512", "cpu" => "1", "ip" => "201", "image" => "debian/buster64"},
-  "database" => {"memory" => "512", "cpu" => "1", "ip" => "202", "image" => "centos/7"}
+  "webserver" => {"memory" => "512", "cpu" => "1", "ip" => "201", "image" => "generic/debian10"},
+  "database" => {"memory" => "512", "cpu" => "1", "ip" => "202", "image" => "bento/centos-8.2"}
 }
 
 Vagrant.configure("2") do |config|
@@ -21,12 +21,14 @@ Vagrant.configure("2") do |config|
         vb.cpus = conf["cpu"]
       end
       if "#{conf["image"]}" == "debian/buster64"
-        machine.vm.provision "shell", inline: "apt update -y && apt upgrade -y"
+        machine.vm.provision "shell", inline: "apt update && apt upgrade -y"
         machine.vm.provision "shell", inline: "apt install python -y"
+        machine.vm.provision "shell", inline: "apt install vim -y"
       end
       if "#{conf["image"]}" == "centos/7"
-        machine.vm.provision "shell", inline: "yum update -y && yum upgrade -y"
+        machine.vm.provision "shell", inline: "yum update && yum upgrade -y"
         machine.vm.provision "shell", inline: "yum install epel-release -y"
+        machine.vm.provision "shell", inline: "yum install vim -y"
       end
     end
   end
