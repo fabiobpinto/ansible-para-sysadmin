@@ -113,10 +113,10 @@
     password: "{{ '1qa2ws' | password_hash('sha512') }}"
     update_password: always
 
-- name: Add user Treinamento on SUDOERS
-  lineinfile:
-    dest: /etc/sudoers
-    line: "treinamento ALL=(ALL:ALL) NOPASSWORD: ALL"
+#- name: Add user Treinamento on SUDOERS
+#  lineinfile:
+#    dest: /etc/sudoers
+#    line: "treinamento ALL=(ALL:ALL) NOPASSWORD: ALL"
 
 ###############################################
 ###############################################
