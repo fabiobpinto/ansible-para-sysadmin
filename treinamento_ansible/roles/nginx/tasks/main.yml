@@ -12,6 +12,10 @@
     - ansible_distribution_file_variety == 'Debian'
     - ansible_hostname == 'webserver'
 
+- name: Add keys of NGINX
+  apt_key:
+    url: 'https://nginx.org/keys/nginx_signing.key'
+    state: present
 
 - name: Update SO
   apt:
@@ -20,6 +24,11 @@
   when:
     - ansible_distribution_file_variety == 'Debian'
     - ansible_hostname == 'webserver'
+
+- name: Install Requirements
+  apt:
+    name: ['unzip','tar']
+    state: latest
 
 - name: Install packages NGINX
   apt:
@@ -30,22 +39,25 @@
     - ansible_hostname == 'webserver'
 
 - name: Backup Security Files NGINX
-  command: mv /etc/nginx /etc/nginx_origin
+  command: mv /etc/nginx /etc/nginx_origin-$(date +"%Y-%m-%d-%H:%M")
   args:
     warn: false
   when:
     - ansible_distribution_file_variety == 'Debian'
     - ansible_hostname == 'webserver'
 
-- name: Copy file nginx.tar.gz to server
-  unarchive: 
-    src: nginx.tar.gz
-    dest: /etc/
-    owner: root
-    group: root
-  when:
-    - ansible_distribution_file_variety == 'Debian'
-    - ansible_hostname == 'webserver'
+
+
+
+#- name: Copy file nginx.tar.gz to server
+#  unarchive: 
+#    src: nginx.tar.gz
+#    dest: /etc/
+#    owner: root
+#    group: root
+#  when:
+#    - ansible_distribution_file_variety == 'Debian'
+#    - ansible_hostname == 'webserver'
 
 - name: Create NGINX Directory
   file:
