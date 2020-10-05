@@ -1,5 +1,12 @@
 ---
 ###############################################
+###############################################
+# SCRIPT COMMON
+# AUTOR: FÁBIO BRITO PINTO
+###############################################
+###############################################
+
+###############################################
 #### ---- Configurações Gerais ---- ####
 ###############################################
 - name: Alterações no arquivo /etc/profile
@@ -11,25 +18,32 @@
     - 'export HISTTIMEFORMAT="%d/%m/%Y - %H:%M:%S - "'
     - 'export HISTSIZE="5000"'
     - 'export HISTFILESIZE="5000"'
+    - 'export TERM=linux'
     - 'alias ls="ls --color"'
     - 'alias grep="grep -i --color"'
 
-- name: Desabilitando o SELINUX de forma permanente
+
+###############################################
+###############################################
+### --- Manager Packages and Upgrade OS --- ###
+###############################################
+###############################################
+
+###############################################
+########### CENTOS/REDHAT #####################
+###############################################
+
+- name: Desabilitando o SELINUX de forma - PERMANENTE
   replace: 
     dest: /etc/selinux/config
     regexp: 'SELINUX=enforcing'
     replace: 'SELINUX=disable'
   when: ansible_distribution_file_variety == 'RedHat'
 
-#- name: Desabilitando o SELINUX de forma temporaria
+#- name: Desabilitando o SELINUX de forma - TEMPORARIA
 #  shell: setenforce 0
 #  when: ansible_distribution_file_variety == 'RedHat'
 
-###############################################
-### --- Manager Packages and Upgrade OS --- ###
-###############################################
-########### CENTOS/REDHAT #####################
-###############################################
 #Install Repository EPEL-RELEASE
 - name: Install Epel-release repository
   yum: 
@@ -70,13 +84,13 @@
 ###############################################
 ###########  DEBIAN/UBUNTU ####################
 ###############################################
-#Update Debian Distro
-- name: Update Debian/Ubuntu Distros
+#Update Debian CACHE
+- name: Update Debian/Ubuntu CACHE
   apt: update_cache=yes upgrade=yes
   when: ansible_distribution_file_variety == 'Debian'
 
-#Upgrade the Distro
-- name: Upgrade Debian/Ubuntu Distros
+#Upgrade the DISTROS
+- name: Upgrade Debian/Ubuntu DISTROS
   apt: upgrade=dist
   when: ansible_distribution_file_variety == 'Debian'
 
@@ -86,7 +100,9 @@
   when: ansible_distribution_file_variety == 'Debian'
 
 ###############################################
+###############################################
 #####  -----  User Manager
+###############################################
 ###############################################
 - name: Create user Treinamento
   user:
@@ -95,9 +111,28 @@
     shell: /bin/bash
     home: /home/treinamento
     password: "{{ '1qa2ws' | password_hash('sha512') }}"
+    update_password: always
+
+- name: Add user Treinamento on SUDOERS
+  lineinfile:
+    dest: /etc/sudoers
+    line: "treinamento ALL=(ALL:ALL) NOPASSWORD: ALL"
+
+###############################################
+###############################################
+#####  -----  VIM
+###############################################
+###############################################
+- name: Configure VIM
+  copy: src={{ item.src }} dest={{ item.dest }} backup=yes
+  with_items:
+      - { src: '.vimrc', dest: '/root/.vimrc' } 
+#      - { src: '.vimrc', dest: '/home/treinamento/.vimrc' } 
   
 ###############################################
+###############################################
 #####  -----  Time Zones
+###############################################
 ###############################################
 - name: Configure Time Zone
   file: 
@@ -109,7 +144,9 @@
     group: root
 
 ###############################################
+###############################################
 #####  ----- Configure SSH 
+###############################################
 ###############################################
 - name: Configure SSHD
   lineinfile:
@@ -117,9 +154,11 @@
     state: present
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
+    backrefs: yes
   with_items:
     - { regexp: '#Port 22', line: 'Port 22' }
     - { regexp: '#Banner none', line: 'Banner /etc/ssh/banner_ssh' }
+    - { regexp: '#PermitRootLogin yes', line: 'PermitRootLogin no' }
     - { regexp: 'X11Forwarding yes', line: 'X11Forwarding no'}
 
 - name: Define protocol version 2 SSH
