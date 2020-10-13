@@ -1,0 +1,23 @@
+---
+- hosts: webserver
+  tasks:
+  - name: Instalação do APACHE
+    apt:
+      name: apache2
+      state: latest
+    notify: 
+      - Enable apache2
+      - Restart apache2
+  handlers:
+    - name: Enable apache2
+      systemd: 
+        name: apache2
+        enabled: yes
+
+    - name: Restart apache2
+      systemd:
+        name: apache2
+        state: restarted
+
+
+...

@@ -1,0 +1,178 @@
+---
+###############################################
+###############################################
+# SCRIPT COMMON
+# AUTOR: FÁBIO BRITO PINTO
+###############################################
+###############################################
+
+###############################################
+#### ---- Configurações Gerais ---- ####
+###############################################
+- name: Alterações no arquivo /etc/profile
+  lineinfile: dest=/etc/profile line={{ item }}
+  with_items:
+    - '#### ---- Linhas Adicionais ---- ####'
+    - '### --- Variaveis e Alias Customizados --- ###'
+    - 'export EDITOR=vim'
+    - 'export HISTTIMEFORMAT="%d/%m/%Y - %H:%M:%S - "'
+    - 'export HISTSIZE="5000"'
+    - 'export HISTFILESIZE="5000"'
+    - 'export TERM=linux'
+    - 'alias ls="ls --color"'
+    - 'alias grep="grep -i --color"'
+
+
+###############################################
+###############################################
+### --- Manager Packages and Upgrade OS --- ###
+###############################################
+###############################################
+
+###############################################
+########### CENTOS/REDHAT #####################
+###############################################
+
+- name: Desabilitando o SELINUX de forma - PERMANENTE
+  replace: 
+    dest: /etc/selinux/config
+    regexp: 'SELINUX=enforcing'
+    replace: 'SELINUX=disable'
+  when: ansible_distribution_file_variety == 'RedHat'
+
+#- name: Desabilitando o SELINUX de forma - TEMPORARIA
+#  shell: setenforce 0
+#  when: ansible_distribution_file_variety == 'RedHat'
+
+#Install Repository EPEL-RELEASE
+- name: Install Epel-release repository
+  yum: 
+    name: epel-release 
+    state: latest
+  when: ansible_distribution_file_variety == 'RedHat'
+
+- name: Enable PowerTool Repository
+  replace:
+      dest=/etc/yum.repos.d/CentOS-PowerTools.repo
+      regexp='enabled=0'
+      replace='enabled=1'
+  when: 
+    - ansible_distribution_file_variety == 'RedHat'
+    - ansible_distribution_major_version == '8'
+
+- name: Install Packages CentOS/RedHat
+  yum: name={{ common_packages_redhat }} state=latest
+#  Posso usar uma variavel aqui ou fazer a lista em default/main.yml
+#  vars:
+#    common_packages_redhat:
+#    - vim
+#    - tree
+  when: ansible_distribution_file_variety == 'RedHat'
+
+- name: Uninstall Packages CentOS/RedHat
+  yum: name= {{ item  }} state=absent
+  with_items:
+    - postfix
+    - firewalld
+  when: ansible_distribution_file_variety == 'RedHat'
+
+#Update Red Hat Distros
+- name: Update Red Hat Distros
+  yum: name=* state=latest security=yes update_cache=yes
+  when: ansible_distribution_file_variety == 'RedHat'
+
+###############################################
+###########  DEBIAN/UBUNTU ####################
+###############################################
+#Update Debian CACHE
+- name: Update Debian/Ubuntu CACHE
+  apt: update_cache=yes upgrade=yes
+  when: ansible_distribution_file_variety == 'Debian'
+
+#Upgrade the DISTROS
+- name: Upgrade Debian/Ubuntu DISTROS
+  apt: upgrade=dist
+  when: ansible_distribution_file_variety == 'Debian'
+
+#Install some programs on Debian/Ubuntu using a list
+- name: Install Packages Debian/Ubuntu
+  yum: name={{ common_packages_debian }} state=latest update_cache=yes
+  when: ansible_distribution_file_variety == 'Debian'
+
+###############################################
+###############################################
+#####  -----  User Manager
+###############################################
+###############################################
+- name: Create user Treinamento
+  user:
+    name: treinamento
+    comment: "Treinamento Ansible"
+    shell: /bin/bash
+    home: /home/treinamento
+    password: "{{ '1qa2ws' | password_hash('sha512') }}"
+    update_password: always
+
+#- name: Add user Treinamento on SUDOERS
+#  lineinfile:
+#    dest: /etc/sudoers
+#    line: "treinamento ALL=(ALL:ALL) NOPASSWORD: ALL"
+
+###############################################
+###############################################
+#####  -----  VIM
+###############################################
+###############################################
+- name: Configure VIM
+  copy: src={{ item.src }} dest={{ item.dest }} backup=yes
+  with_items:
+      - { src: '.vimrc', dest: '/root/.vimrc' } 
+#      - { src: '.vimrc', dest: '/home/treinamento/.vimrc' } 
+  
+###############################################
+###############################################
+#####  -----  Time Zones
+###############################################
+###############################################
+- name: Configure Time Zone
+  file: 
+    src: /usr/share/zoneinfo/America/Sao_Paulo 
+    dest: /etc/localtime 
+    state: link 
+    force: yes 
+    owner: root 
+    group: root
+
+###############################################
+###############################################
+#####  ----- Configure SSH 
+###############################################
+###############################################
+- name: Configure SSHD
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    state: present
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    backrefs: yes
+  with_items:
+    - { regexp: '#Port 22', line: 'Port 22' }
+    - { regexp: '#Banner none', line: 'Banner /etc/ssh/banner_ssh' }
+    - { regexp: '#PermitRootLogin yes', line: 'PermitRootLogin no' }
+    - { regexp: 'X11Forwarding yes', line: 'X11Forwarding no'}
+
+- name: Define protocol version 2 SSH
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    line: 'Protocol 2'
+
+- name: Add a motd
+  template:
+    src: motd
+    dest: /etc/motd
+    force: yes
+    owner: root
+    group: root
+    mode: 0755
+  notify:
+    - Restart SSH

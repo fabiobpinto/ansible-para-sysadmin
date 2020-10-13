@@ -1,0 +1,22 @@
+---
+- hosts: webserver
+  tasks:
+  - name: Instalação do NGINX
+    apt:
+      name: nginx
+      state: latest
+    notify: 
+      - Stop Apache
+      - Restart Nginx
+  handlers:
+    - name: Stop Apache
+      systemd: 
+        name: apache2
+        state: absent
+    - name: Restart Nginx
+      systemd:
+        name: nginx
+        state: restarted
+
+
+...

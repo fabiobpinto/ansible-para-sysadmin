@@ -1,0 +1,24 @@
+[servidores_automacao]
+automacao
+
+[servidores_web]
+webserver
+
+[servidores_db]
+database
+
+[servidores:children]
+servidores_web
+servidores_db
+servidores_automacao
+
+[centos]
+automacao
+database
+
+[debian]
+webserver
+
+[debian:vars]
+ansible_python_interpreter= /usr/bin/python3
+

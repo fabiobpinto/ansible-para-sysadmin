@@ -1,0 +1,108 @@
+---
+# tasks file for mysql
+- name: Add mariadb repository for CentOS
+  yum_repository:
+    name: MariaDB
+    description: Maridb repository
+    baseurl: http://yum.mariadb.org/10.1.45/centos{{ ansible_distribution_major_version }}-amd64
+    gpgcheck: true
+    gpgkey: https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+
+- name: Install packages MariaDB
+  yum:
+    name: "{{ mariadb_packages }}"
+    state: latest
+    update_cache: yes
+  vars:
+     mariadb_packages:
+       - MariaDB
+       - mariadb-server
+       - MySQL-python
+  when: ansible_hostname == 'database'
+
+- name: Creating password root
+  command: openssl rand -base64 14 creates=/root/.my.cnf
+  register: mysql_root_pass
+  when: ansible_hostname == 'database'
+
+- name: Display password
+  debug:
+    msg: "Password: {{ mysql_root_pass.stdout }}"
+  when: 
+    - mysql_root_pass.changed
+    - ansible_hostname == 'database'
+
+- name: Restart Mariadb
+  service:
+    name: mariadb
+    state: started
+    enabled: yes
+
+- name: Copy Template .my.cnf
+  template: 
+    src: .my.cnf
+    dest: /root/.my.cnf
+    owner: root
+    group: root
+    mode: 0600
+  when: 
+    - mysql_root_pass.changed
+    - ansible_hostname == 'database'
+
+- name: Alteracao da senha de root
+  mysql_user: name=root host={{ item }} password={{ mysql_root_pass.stdout }}
+  with_items:
+    - 127.0.0.1
+    - localhost
+  when: 
+    - mysql_root_pass.changed
+    - ansible_hostname == 'database'
+
+- name: Remove Access to Anonymous users MySQL
+  mysql_user: name="" host={{ item }} state=absent
+  with_items:
+    - localhost
+    - "{{ ansible_fqdn }}"
+  when: ansible_hostname == 'database'
+
+- name: Remove Test BASE
+  mysql_db:
+    name: test
+    state: absent
+
+- name: Create Database Wordpress
+  mysql_db:
+    name: 'wordpress'
+    state: present
+    login_user: 'root'
+    login_password: "{{ mysql_root_pass.stdout }}"
+    login_host: localhost
+  when:
+    - mysql_root_pass.changed
+    - ansible_hostname == 'database'
+
+- name: Create USER wordpress
+  mysql_user:
+    name: 'wordpress'
+    password: 'wordpress'
+    priv: 'wordpress.*:ALL'
+    host: '192.168.254.%'
+    state: present
+    login_user: 'root'
+    login_password: "{{ mysql_root_pass.stdout }}"
+    login_host: localhost
+  when:
+    - mysql_root_pass.changed
+    - ansible_hostname == 'database'
+
+- name: Permit remote access on MySQL
+  lineinfile:
+    dest: /etc/my.cnf.d/server.cnf
+    regexp: 'bind-address=0.0.0.0'
+    line: 'bind-address=192.168.254.202'
+    state: present
+  notify: Restart MariaDB
+  when: ansible_hostname == 'database'
+
+
+...

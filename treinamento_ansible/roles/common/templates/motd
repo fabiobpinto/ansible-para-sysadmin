@@ -1,0 +1,8 @@
+----------------------------------------------------
+              TREINAMENTO ANSIBLE
+
+Host.: "{{ ansible_hostname }}"
+IP Address: "{{ ansible_all_ipv4_addresses }}"
+Distro.: "{{ ansible_distribution }}"
+
+----------------------------------------------------

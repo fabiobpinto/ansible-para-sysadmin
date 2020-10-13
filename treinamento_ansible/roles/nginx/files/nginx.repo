@@ -1,0 +1,2 @@
+deb https://nginx.org/packages/mainline/debian buster nginx
+deb-src https://nginx.org/packages/mainline/debian buster nginx

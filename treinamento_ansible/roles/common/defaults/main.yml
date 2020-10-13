@@ -1,0 +1,22 @@
+---
+# defaults file for common
+
+treinamento_pass_sha256: "930b4f3c3364f459dc694effff91b4d97841deab19c41dc980d41fdaf8621b39"
+
+common_packages_redhat:
+  - vim
+  - '@Development tools'
+  - nmap
+  - tcpdump
+  - wget
+  - screen
+
+common_packages_debian:
+  - vim
+  - build-essential
+  - nmap
+  - tcpdump
+  - wget
+  - screen
+
+...

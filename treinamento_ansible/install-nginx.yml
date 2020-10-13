@@ -1,0 +1,23 @@
+---
+- hosts: webserver
+  tasks:
+  - name: Instalação do NGINX
+    apt:
+      name: nginx
+      state: latest
+    notify: 
+      - Enable Nginx
+      - Restart Nginx
+  handlers:
+    - name: Enable Nginx
+      systemd: 
+        name: nginx
+        enabled: yes
+
+    - name: Restart Nginx
+      systemd:
+        name: nginx
+        state: restarted
+
+
+...

@@ -1,0 +1,7 @@
+galaxy_info:
+  author: Fábio Brito Pinto
+  description: Instalação do pacote PHP
+
+dependencies:
+  - { role: php }
+
