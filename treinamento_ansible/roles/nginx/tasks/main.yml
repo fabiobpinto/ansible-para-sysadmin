@@ -17,10 +17,17 @@
     url: 'https://nginx.org/keys/nginx_signing.key'
     state: present
 
-- name: Update SO
+- name: Update all packages to the last version
   apt:
     name: '*'
     state: latest
+  when:
+    - ansible_distribution_file_variety == 'Debian'
+
+- name: Update SO apt-get update
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
   when:
     - ansible_distribution_file_variety == 'Debian'
     - ansible_hostname == 'webserver'
@@ -32,32 +39,31 @@
 
 - name: Install packages NGINX
   apt:
-    name: ['nginx', 'libnginx-mod-http-geoip'] 
+    name: nginx 
     state: latest
   when:
     - ansible_distribution_file_variety == 'Debian'
     - ansible_hostname == 'webserver'
 
 - name: Backup Security Files NGINX
-  command: mv /etc/nginx /etc/nginx_origin-$(date +"%Y-%m-%d-%H:%M")
+  command: cp -r /etc/nginx /etc/nginx_origin
   args:
     warn: false
   when:
     - ansible_distribution_file_variety == 'Debian'
     - ansible_hostname == 'webserver'
 
-
-
-
-#- name: Copy file nginx.tar.gz to server
-#  unarchive: 
-#    src: nginx.tar.gz
-#    dest: /etc/
-#    owner: root
-#    group: root
-#  when:
-#    - ansible_distribution_file_variety == 'Debian'
-#    - ansible_hostname == 'webserver'
+- name: Copy file nginx.tar.gz to server
+  unarchive: 
+    src: nginx.tar.gz
+    dest: /etc/
+    owner: root
+    group: root
+    #remote_src: yes
+  when:
+    - ansible_distribution_file_variety == 'Debian'
+    - ansible_hostname == 'webserver'
+  notify: Restart NGINX
 
 - name: Create NGINX Directory
   file:
@@ -74,4 +80,25 @@
     - ansible_distribution_file_variety == 'Debian'
     - ansible_hostname == 'webserver'
 
+- name: NGINX | Copy index.html (template)
+  copy: 
+    src: '{{ item }}'
+    dest: /var/www/html
+    force: yes
+    owner: www-data
+    group: www-data
+    mode: 0664
+  with_items:
+    - index.html
+  when:
+    - ansible_distribution_file_variety == 'Debian'
+    - ansible_hostname == 'webserver'
+
+- name: Change owner and group on NGINX Directory
+  file:
+    path: /etc/nginx
+    owner: root
+    group: root
+    mode: 0755
+    recurse: yes
 ...
