@@ -3,7 +3,7 @@
 
 machines = {
   "automacao" => {"memory" => "1024", "cpu" => "2", "ip" => "200", "image" => "centos/7"},
-  "webserver" => {"memory" => "512", "cpu" => "1", "ip" => "201", "image" => "generic/debian10"},
+  "webserver" => {"memory" => "512", "cpu" => "1", "ip" => "201", "image" => "geerlingguy/debian10"},
   "database" => {"memory" => "512", "cpu" => "1", "ip" => "202", "image" => "bento/centos-8.2"}
 }
 
