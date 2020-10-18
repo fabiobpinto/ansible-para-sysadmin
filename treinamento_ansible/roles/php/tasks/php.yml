@@ -1,0 +1,60 @@
+---
+# tasks file for php
+
+- name: Update all packages to the last version
+  apt:
+    name: '*'
+    state: latest
+  when:
+    - ansible_distribution_file_variety == 'Debian'
+
+- name: Update SO apt-get update
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  when:
+    - ansible_distribution_file_variety == 'Debian'
+    - ansible_hostname == 'webserver'
+
+
+- name: Install Packages
+  apt:
+    name: '{{ packages }}'
+    state: latest
+
+- name: Creating Security copy from /etc/php.ini
+  copy: 
+    src: /etc/php.ini 
+    dest: /etc/php.ini_origin
+    backup: yes
+  args:
+    warn: false
+
+- name: Setting timezone on php.ini
+  lineinfile:
+    path: /etc/php.ini
+    regexp: ';date.timezone = '
+    line: 'date.timezone = America/Sao_paulo'
+    state: present
+
+- name: Creating Directory
+  file:
+    path: '{{ item }}'
+    state: directory
+    mode: 755
+    owner: www-data
+    group: www-data
+  with_items:
+    - /var/log/php-fpm
+    - /var/lib/php/session
+    - /var/lib/php/wsdlcache 
+
+- name: Checking PHP Version
+  shell: php -v
+  register: phpversion
+  args:
+    warn: false
+
+- debug: msg={{ phpversion.stdout }}
+
+...

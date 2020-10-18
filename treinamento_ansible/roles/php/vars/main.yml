@@ -1,2 +1,21 @@
 ---
 # vars file for php
+
+# ATENCAO
+# Nao coloquei todos os pacotes, somente alguns a fim de exemplificar
+
+packages:
+  - php-commong
+  - php-clig
+  - php-pgsqlg
+  - php-develg
+  - php-xmlg
+  - php-odbcg
+  - php-pdog
+  - php-mysqlndg
+  - php-processg
+  - php-bcmathg
+  - php-recodeg
+  - php-gdg
+  - perl-PHP-Serialization.noarch 
+  - php-pear-HTTP-Request.noarch

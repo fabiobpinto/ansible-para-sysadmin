@@ -1,0 +1,8 @@
+---
+# Common Playbook - Configurações comum a todos os hosts
+- name: Playbook NGINX - Instalacao NGINX no Server WEBSERVER
+  hosts: 
+    - webserver
+  roles:
+    - php
+...
