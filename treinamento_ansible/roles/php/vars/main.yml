@@ -1,2 +1,14 @@
 ---
 # vars file for php
+
+# ATENCAO
+# Nao coloquei todos os pacotes, somente alguns a fim de exemplificar
+
+packages:
+  - php7.3
+  - php-common
+  - adminer
+  - php-cli
+  - php-mysql
+  - php-snmp
+  - php-ssh2

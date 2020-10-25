@@ -1,2 +1,6 @@
 ---
 # defaults file for php
+php_enabled: true
+phpfpm_enabled: true
+
+...

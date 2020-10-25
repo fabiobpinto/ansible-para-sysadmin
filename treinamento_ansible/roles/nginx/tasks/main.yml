@@ -53,13 +53,26 @@
     - ansible_distribution_file_variety == 'Debian'
     - ansible_hostname == 'webserver'
 
+#########################################
+# FALTA TESTAR <<<<=====
+#########################################
+#- name: Backup Security Files NGINX
+#  copy: 
+#    src: /etc/nginx 
+#    dest: /etc/nginx_origin
+#    backup: yes
+#  args:
+#    warn: false
+#  when:
+#    - ansible_distribution_file_variety == 'Debian'
+#    - ansible_hostname == 'webserver'
+
 - name: Copy file nginx.tar.gz to server
   unarchive: 
     src: nginx.tar.gz
     dest: /etc/
     owner: root
     group: root
-    #remote_src: yes
   when:
     - ansible_distribution_file_variety == 'Debian'
     - ansible_hostname == 'webserver'
