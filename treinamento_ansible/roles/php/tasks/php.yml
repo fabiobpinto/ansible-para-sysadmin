@@ -22,17 +22,14 @@
     name: '{{ packages }}'
     state: latest
 
-- name: Creating Security copy from /etc/php.ini
-  copy: 
-    src: /etc/php.ini 
-    dest: /etc/php.ini_origin
-    backup: yes
+- name: Creating security copy from /etc/php/7.3/apache2/php.ini
+  command: cp /etc/php/7.3/apache2/php.ini /etc/php/7.3/apache2/php.ini_origin
   args:
     warn: false
 
 - name: Setting timezone on php.ini
   lineinfile:
-    path: /etc/php.ini
+    path: /etc/php/7.3/apache2/php.ini
     regexp: ';date.timezone = '
     line: 'date.timezone = America/Sao_paulo'
     state: present

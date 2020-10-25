@@ -1,2 +1,63 @@
 ---
 # tasks file for php
+
+- name: Update all packages to the last version
+  apt:
+    name: '*' 
+    state: latest
+  when:
+    - ansible_distribution_file_variety == 'Debian'
+
+- name: Update SO apt-get update
+  apt:
+    update_cache: yes 
+    cache_valid_time: 3600
+  when:
+    - ansible_distribution_file_variety == 'Debian'
+    - ansible_hostname == 'webserver'
+
+- name: Install packages PHP_FPM 
+  apt: 
+    name: php-fpm
+    state: latest
+
+- name: Creating security copy from /etc/php/7.3/fpm/php-fpm.conf
+  command: cp /etc/php/7.3/fpm/php-fpm.conf /etc/php/7.3/fpm/php-fpm.conf_origin
+  args:
+    warn: false
+  
+
+- name: Creating security copy from /etc/php-fpm.d/www.conf
+  command: cp /etc/php/7.3/fpm/pool.d/www.conf /etc/php/7.3/fpm/pool.d/www.conf_origin
+  args:
+    warn: false
+
+- name: Copy www.conf default
+  copy: 
+    src: www.conf 
+    dest: /etc/php/7.3/fpm/pool.d/www.conf
+    backup: yes
+
+- name: Creating directory
+  file: 
+    path: '{{item}}'
+    state: directory 
+    mode: 755 
+    owner: www-data
+    group: www-data
+  with_items:
+      - /var/log/php-fpm
+      - /var/lib/php/session
+      - /var/lib/php/wsdlcache
+
+- name: Checking PHP Version
+  shell: php-fpm7.3 -v
+  register: phpfpmversion
+  args:
+    warn: false
+
+- debug: 
+    msg: '{{ phpfpmversion.stdout }}'
+  notify: Restart phpfpm
+
+...
