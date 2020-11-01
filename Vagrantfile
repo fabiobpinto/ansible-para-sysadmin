@@ -20,12 +20,17 @@ Vagrant.configure("2") do |config|
         vb.memory = conf["memory"]
         vb.cpus = conf["cpu"]
       end
-      if "#{conf["image"]}" == "debian/buster64"
+      if "#{conf["image"]}" == "geerlingguy/debian10"
         machine.vm.provision "shell", inline: "apt update && apt upgrade -y"
         machine.vm.provision "shell", inline: "apt install python -y"
         machine.vm.provision "shell", inline: "apt install vim -y"
       end
       if "#{conf["image"]}" == "centos/7"
+        machine.vm.provision "shell", inline: "yum update && yum upgrade -y"
+        machine.vm.provision "shell", inline: "yum install epel-release -y"
+        machine.vm.provision "shell", inline: "yum install vim -y"
+      end
+      if "#{conf["image"]}" == "bento/centos-8.2"
         machine.vm.provision "shell", inline: "yum update && yum upgrade -y"
         machine.vm.provision "shell", inline: "yum install epel-release -y"
         machine.vm.provision "shell", inline: "yum install vim -y"
