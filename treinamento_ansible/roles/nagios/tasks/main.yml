@@ -1,0 +1,132 @@
+---
+# tasks file for nagios
+
+- name: SISOP | Enable PowerTool Repository
+  replace:
+      dest=/etc/yum.repos.d/CentOS-PowerTools.repo
+      regexp='enabled=0'
+      replace='enabled=1'
+  when: ansible_distribution_major_version == "8"
+
+- name: SISOP | Install Epel-release
+  yum: name=epel-release state=latest
+
+- name: YUM | Update System
+  yum: name=* state=latest update_cache=yes
+
+- name: SISOP | Install Nagios Packages
+  yum: name={{ packages }} state=latest
+
+- name: SISOP | Add group nagcmd
+  group: name=nagcmd state=present
+
+- name: SISOP | Add usuario nagios
+  user: name=nagios groups=nagcmd append=yes
+
+- name: SISOP | Setting /etc/services
+  lineinfile: dest=/etc/services line="nrpe 5666/tcp"
+
+- name: NAGIOS | Downloading and uncompress Nagios source code
+  unarchive: src=https://ufpr.dl.sourceforge.net/project/nagios/nagios-4.x/nagios-{{ version }}/nagios-{{ version }}.tar.gz dest=/opt remote_src=yes
+
+- name: NAGIOS | Downloading and uncompress Nagios Plugins
+  unarchive: src=https://nagios-plugins.org/download/nagios-plugins-{{ version_plugins }}.tar.gz dest=/opt remote_src=yes
+
+- name: NAGIOS | Configuring Nagios Core
+  shell: ./configure --with-nagios-group=nagios --with-command-group=nagcmd
+  args: 
+    chdir: /opt/nagios-{{ version }}
+
+- name: NAGIOS | Compiling Nagios Core
+  make: chdir=/opt/nagios-{{ version }} target={{item}}
+  with_items:
+    - all
+    - install
+    - install-init
+    - install-config
+    - install-commandmode
+    - install-webconf
+
+- name: NAGIOS | Copy files
+  shell: cp -R {{ item }} /usr/local/nagios/libexec
+  with_items:
+    - /opt/nagios-{{ version }}/contrib/eventhandlers/
+    - /usr/lib64/nagios/plugins/check_nrpe
+  args:
+    warn: false
+
+- name: NAGIOS | Setting permissions
+  file:
+      path: /usr/local/nagios
+      owner: nagios
+      group: nagios
+
+- name: NAGIOS | Copy credentials file to target
+  copy : src=htpasswd.users dest=/usr/local/nagios/etc mode=0644 owner=nagios group=nagios
+
+- name: NAGIOS | Configure plugins do Nagios
+  shell: ./configure --with-nagios-user=nagios --with-nagios-group=nagcmd
+  args: 
+    chdir: /opt/nagios-plugins-{{ version_plugins }}
+    warn: false
+
+- name: NAGIOS | Compiling Nagios Plugins
+  make: chdir=/opt/nagios-plugins-{{ version_plugins }} target={{item}}
+  with_items:
+    - install
+
+- name: SISOP | Remove source files
+  file: path=/opt/{{ item }} state=absent
+  with_items:
+    - nagios-{{ version }}
+    - nagios-plugins-{{ version_plugins }}
+
+- name: SISOP | Creating directories Nagios
+  file:
+      path={{item}}
+      state=directory
+      mode=0775
+      owner=nagios
+      group=nagios
+  with_items:
+      - /usr/local/nagios/etc/objects/servers
+      - /usr/local/nagios/etc/objects/templates
+
+- name: SISOP | Configure systemd Script
+  lineinfile:
+    dest=/usr/lib/systemd/system/nagios.service
+    state=present
+    regexp='ExecStopPost=/bin/rm -f /usr/local/nagios/var/rw/nagios.cmd'
+    line='#ExecStopPost=/bin/rm -f /usr/local/nagios/var/rw/nagios.cmd'
+    backrefs=yes
+
+#--- Copy items ---#
+
+- name: NAGIOS | Copy plugins
+  unarchive: src=plugins.tar.gz dest=/usr/local/nagios/libexec/ owner=nagios group=nagios
+
+- name: NAGIOS | Copy config files
+  copy : src={{ item.src }} dest={{ item.dst }} mode=0664 owner=nagios group=nagios force=yes
+  with_items:
+    - { src: 'cgi.cfg', dst: '/usr/local/nagios/etc/' }
+    - { src: 'nagios.cfg', dst: '/usr/local/nagios/etc/' }
+    - { src: 'resource.cfg', dst: '/usr/local/nagios/etc/' }
+    - { src: 'commands.cfg', dst: '/usr/local/nagios/etc/objects/' }
+    - { src: 'contacts.cfg', dst: '/usr/local/nagios/etc/objects/' }
+    - { src: 'templates.cfg', dst: '/usr/local/nagios/etc/objects/' }
+    - { src: 'timeperiods.cfg', dst: '/usr/local/nagios/etc/objects/' }
+    - { src: 'localhost.cfg', dst: '/usr/local/nagios/etc/objects/servers/' }
+    - { src: 'localhost.cfg', dst: '/usr/local/nagios/etc/objects/' }
+    - { src: 'windows.cfg', dst: '/usr/local/nagios/etc/objects/templates/' }
+    - { src: 'hostextinfo.cfg', dst: '/usr/local/nagios/etc/objects/' }
+
+- name: SISOP | Stop NFtables (Firewall)
+  shell: nft flush ruleset
+  args:
+    warn: false
+  when: ansible_distribution_major_version == "8"
+  notify:
+    - Start httpd
+    - Start nagios
+
+...

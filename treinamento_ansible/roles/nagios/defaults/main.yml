@@ -1,0 +1,46 @@
+---
+
+packages:
+  - wget
+  - tar
+  - unzip
+  - httpd
+  - php
+  - gcc
+  - glibc
+  - glibc-common
+  - gd
+  - gd-devel
+  - make
+  - net-snmp 
+  - openssl-devel
+  - nagios-plugins-nrpe
+  - perl-CPAN
+  - openssl-devel
+  - perl-Archive-Zip
+  - perl-Class-MethodMaker
+  - perl-UUID-Tiny.noarch
+  - perl-SOAP-Lite
+  - perl-XML-SAX
+  - perl-XML-NamespaceSupport
+  - perl-XML-LibXML
+  - perl-MIME-Lite
+  - perl-MIME-Types
+  - perl-MailTools
+  - perl-TimeDate
+  - uuid
+  - libuuid
+  - perl-Data-Dump
+  - cpan
+  - libxml2-devel
+  - perl-libwww-perl
+  - perl-Test-MockObject
+  - perl-Test-Simple
+  - perl-Monitoring-Plugin
+  - perl-Config-Tiny  
+#  - http://www6.atomicorp.com/channels/atomic/centos/7/x86_64/RPMS/wmi-1.3.14-4.el7.art.x86_64.rpm
+
+version: 4.4.5
+version_plugins: 2.3.3
+
+...

@@ -1,0 +1,8 @@
+---
+# Common Playbook - Configurações comum a todos os hosts
+- name: Playbook Nagios - Instalacao Nagios no CentOS 8
+  hosts: 
+    - monitoracao
+  roles:
+    - nagios
+...
