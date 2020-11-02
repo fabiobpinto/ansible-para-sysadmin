@@ -7,14 +7,19 @@ webserver
 [servidores_db]
 database
 
+[servidores_monitoracao]
+monitoracao
+
 [servidores:children]
 servidores_web
 servidores_db
 servidores_automacao
+servidores_monitoracao
 
 [centos]
 automacao
 database
+monitoracao
 
 [debian]
 webserver

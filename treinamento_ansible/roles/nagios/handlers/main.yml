@@ -1,0 +1,16 @@
+---
+# handlers file for nagios
+
+- name: Start httpd
+  systemd: 
+    daemon_reload: yes 
+    name: httpd 
+    state: started 
+    enabled: true
+
+- name: Start nagios
+  systemd: 
+    daemon_reload: yes 
+    name: nagios 
+    state: started 
+    enabled: true

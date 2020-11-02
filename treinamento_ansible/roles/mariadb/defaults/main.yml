@@ -1,0 +1,9 @@
+---
+# defaults file for mariadb
+
+db_name: dbteste001
+db_user: fabio
+db_user_password: 1qa2ws3ed
+root_password: 1qa2ws3ed
+
+...

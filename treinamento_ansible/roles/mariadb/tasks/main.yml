@@ -1,0 +1,71 @@
+---
+# tasks file for mariadb
+
+- name: Add repository (MariaDB)
+  yum_repository:
+    name: mariadb
+    description: MariaDB repo
+    baseurl: 'http://yum.mariadb.org/10.5/centos8-amd64'
+    gpgkey: 'https://yum.mariadb.org/RPM-GPG-KEY-MariaDB'
+    state: present
+
+#- name: Update System
+#  yum: 
+#    name: '*' 
+#    state: latest
+#    update_cache: yes
+
+- name: Install Requirements
+  yum: 
+    name: 
+      - perl-DBI
+      - libaio
+      - libsepol
+      - lsof
+      - boost-program-options
+      - python3
+      - python3-mysql.x86_64
+    state: latest
+
+
+- name: Install MariaDB
+  yum: 
+    name: mariadb-server 
+    state: latest
+
+- name: Restart MariaDB
+  systemd: 
+    name: mariadb 
+    state: restarted 
+    enabled: yes 
+    daemon_reload: yes
+
+- name: Create a new database
+  mysql_db:
+    name: '{{ db_name }}'
+    state: present
+    login_user: root
+    login_password: ''
+
+- name: Create new user and grant all privileges on DB
+  mysql_user:
+    name: '{{ db_user }}'
+    password: '{{ db_user_password }}'
+    priv: '{{ db_name }}.*:ALL'
+    host: '%'
+    login_user: root
+    login_password: ''
+
+- name: Update root password
+  mysql_user:
+    name: root
+    password: '{{ root_password }}'
+    priv: '*.*:ALL'
+    host: $item
+    login_user: root
+    login_password: ''
+  with_items:
+    - 127.0.0.1
+    - localhost
+    - ::1
+...

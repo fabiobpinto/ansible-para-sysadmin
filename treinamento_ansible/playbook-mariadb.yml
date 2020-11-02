@@ -1,8 +1,8 @@
 ---
 # Common Playbook - Configurações comum a todos os hosts
-- name: Playbook PHP - Instalacao PHP no Server WEBSERVER
+- name: Playbook MariaDB
   hosts: 
-    - webserver
+    - database
   roles:
-    - php
+    - mariadb
 ...
