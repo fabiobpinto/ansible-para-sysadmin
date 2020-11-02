@@ -4,7 +4,8 @@
 machines = {
   "automacao" => {"memory" => "1024", "cpu" => "2", "ip" => "200", "image" => "centos/7"},
   "webserver" => {"memory" => "512", "cpu" => "1", "ip" => "201", "image" => "geerlingguy/debian10"},
-  "database" => {"memory" => "512", "cpu" => "1", "ip" => "202", "image" => "bento/centos-8.2"}
+  "database" => {"memory" => "512", "cpu" => "1", "ip" => "202", "image" => "bento/centos-8.2"},
+  "monitoracao" => {"memory" => "512", "cpu" => "1", "ip" => "203", "image" => "bento/centos-8.2"}
 }
 
 Vagrant.configure("2") do |config|
@@ -41,6 +42,7 @@ Vagrant.configure("2") do |config|
   echo '192.168.254.200 automacao.sysadmin.domain automacao' >> /etc/hosts
   echo '192.168.254.201 webserver.sysadmin.domain webserver' >> /etc/hosts
   echo '192.168.254.202 database.sysadmin.domain database' >> /etc/hosts
+  echo '192.168.254.203 monitoracao.sysadmin.domain monitoracao' >> /etc/hosts
   SHELL
 
 
