@@ -8,8 +8,10 @@ Você pode fazer os acessos de várias formas:
 * criptografando o arquivo de senha com o ansible-vault e na execução da Playbok usar o parametro --ask-vault-pass
 * Usar os parametros com dados dos usuarios ao executar a playbook. Ex.: --user {usuario} -u {usuario} --ask-pass 
 * Configurar o ansible.cfg para quando houver elevação de privilégios seja solicitada a senha de root. Como no exemplo abaixo:
-[privilege_escalation]
-become=True
-become_method=su 
-become_user=root
-become_ask_pass=True
+```sh
+ [privilege_escalation]
+ become=True
+ become_method=su
+ become_user=root
+ become_ask_pass=True
+```
