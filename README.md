@@ -5,6 +5,6 @@ O Treinamento Ansible para SysAdmin foi desenvolvido com o objetivo de auxiliar 
 
 Ansible-para-sysadmin/treinamento_ansible/ - Pasta contem as Roles e hosts
 
-![logo](http://github.com/fabiobpinto/ansible-para-sysadmin/blob/master/ansible.png)
+![Ansible](http://user-images.githubusercontent.com/4643427/98452329-11c06b00-212d-11eb-8449-ed289e1794f1.png)
 
 Ansible SysAdmin - Ansible for SysAdmin
