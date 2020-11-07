@@ -2,7 +2,8 @@ yum update
 yum upgrade -y
 yum install dnf -y
 dnf makecache
-dnf install epel-release
+dnf install epel-release -y
+dnf install dnf-plugins-core
 dnf makecache
 dnf install ansible
 ansible --version
@@ -12,7 +13,8 @@ systemctl start docker
 systemctl enable docker
 docker --version
 dnf install git gcc gcc-c++ nodejs gettext device-mapper-persistent-data lvm2 bzip2 vim ansible python3 python3-pip -y
-pip3 install docker-compose
+dnf install docker-compose
+yum install libselinux-python3
 git clone --depth 50 https://github.com/ansible/awx.git
 cd awx/installer/
 vim inventory
@@ -48,11 +50,12 @@ docker ps -la
 docker ps -l
 semanage port -a -t http_port_t -p tcp 8052
 setsebool -P httpd_can_network_connect 1
-docker ps
+
+///////////////// Controlador grafico para Docker
 docker volume create portainer_data
 docker run -d -p 8000:8000 -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce
 
 
-Não lembro se foi daqui que peguei o tutorial
+Algumas fontes de consultas que utilizei
 https://www.vivaolinux.com.br/dica/Instalando-o-AWX-no-CentOS-8
 https://computingforgeeks.com/install-and-configure-ansible-awx-on-centos/
